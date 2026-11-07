@@ -94,7 +94,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
     text-decoration: none;
 }
 
-.brand img { border-radius: 8px; }
+.brand img { border-radius: 11px; }
 
 .nav-links a {
     color: var(--muted);
@@ -820,8 +820,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
         padding: 0 12px;
     }
     .map-panel { flex: 0 0 auto; height: 54vh; min-height: 380px; }
-    .camera-panel { flex: 0 0 auto; min-height: 520px; padding: 14px; }
-    .camera-list { max-height: 680px; flex: 0 1 auto; }
+    .camera-panel { flex: 0 0 auto; height: 54vh; min-height: 380px; padding: 14px; }
+    .camera-list { max-height: none; flex: 1 1 0; }
     .notice-card { margin-top: 48px; }
     .content-sections { padding: 0 20px; }
     .content-sections .section { padding-top: 56px; }
