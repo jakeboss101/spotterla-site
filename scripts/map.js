@@ -276,9 +276,9 @@ const MAPKIT_TOKEN = "eyJraWQiOiI0WkJTTjRWSEZLIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNT
             // Same pins as the iPhone app: a white camera in a red (live) or gray marker,
             // with just the speed limit underneath.
             const cameraGlyph = {
-                1: "/images/camera-glyph.png",
-                2: "/images/camera-glyph@2x.png",
-                3: "/images/camera-glyph@3x.png"
+                1: "/images/camera-glyph.png?v=2",
+                2: "/images/camera-glyph@2x.png?v=2",
+                3: "/images/camera-glyph@3x.png?v=2"
             };
             const annotations = cameras.map((camera) => {
                 const hasLimit = camera.speedLimit !== null && camera.speedLimit !== undefined;
