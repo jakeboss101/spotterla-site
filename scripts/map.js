@@ -16,6 +16,7 @@ const MAPKIT_TOKEN = "eyJraWQiOiI0WkJTTjRWSEZLIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNT
     let selectedId = null;
     let activeFilter = "all";
     let nearMePosition = null;
+    const cameraByAnnotation = new WeakMap();
 
     const escapeText = (value) => String(value ?? "");
 
@@ -263,15 +264,21 @@ const MAPKIT_TOKEN = "eyJraWQiOiI0WkJTTjRWSEZLIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNT
             const annotations = cameras.map((camera) => {
                 const options = {
                     color: camera.status === "live" ? "#e3262f" : "#8e8e93",
-                    enabled: false
+                    enabled: true
                 };
                 if (camera.speedLimit !== null && camera.speedLimit !== undefined) {
                     options.glyphText = `${camera.speedLimit} mph`;
                 }
-                return new mapkit.MarkerAnnotation(
+                const annotation = new mapkit.MarkerAnnotation(
                     new mapkit.Coordinate(camera.lat, camera.lon),
                     options
                 );
+                cameraByAnnotation.set(annotation, camera.id);
+                return annotation;
+            });
+            map.addEventListener("select", (event) => {
+                const cameraId = cameraByAnnotation.get(event.annotation);
+                if (cameraId) selectCamera(cameraId);
             });
             map.addAnnotations(annotations);
             mapElement.classList.add("map-ready");
@@ -296,10 +303,6 @@ const MAPKIT_TOKEN = "eyJraWQiOiI0WkJTTjRWSEZLIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNT
         }
         window.spotterlaMapKitReady = () => {
             delete window.spotterlaMapKitReady;
-            mapkit.addEventListener("error", (event) => {
-                console.error("MapKit authorization failed:", event);
-                setMapError("The map couldn't be authorized. Please check the MapKit token. The camera list is still available.");
-            });
             initializeMapKit();
         };
         const script = document.createElement("script");
