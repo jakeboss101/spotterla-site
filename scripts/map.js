@@ -262,6 +262,16 @@ const MAPKIT_TOKEN = "eyJraWQiOiI0WkJTTjRWSEZLIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNT
             map.showsTraffic = false;
             // The app's soft, muted colors, so the camera pins stand out.
             map.mapType = mapkit.Map.MapTypes.MutedStandard;
+            // MapKit JS doesn't follow the system appearance by itself; match light/dark mode,
+            // including when it changes while the page is open.
+            const darkMode = window.matchMedia("(prefers-color-scheme: dark)");
+            const applyColorScheme = () => {
+                map.colorScheme = darkMode.matches
+                    ? mapkit.Map.ColorSchemes.Dark
+                    : mapkit.Map.ColorSchemes.Light;
+            };
+            applyColorScheme();
+            darkMode.addEventListener("change", applyColorScheme);
 
             // Same pins as the iPhone app: a white camera in a red (live) or gray marker,
             // with just the speed limit underneath.
