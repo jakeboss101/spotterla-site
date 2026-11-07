@@ -4,7 +4,7 @@ from the iOS app's bundled dataset, so the website and the app always match.
 
 Usage:  python3 -I scripts/build_cameras.py ../SpotterLA/MyApp/CameraSeed.swift
 
-Run it after Scripts/update_cameras.py in the app repo, then commit and push.
+Run it after Scripts/build_cameras.py in the app repo, then commit and push.
 """
 import html
 import json
@@ -21,7 +21,8 @@ DATA = SITE / "data" / "cameras.json"
 ROW = re.compile(
     r'Camera\(id: "(?P<id>[^"]*)", street: "(?P<street>[^"]*)", '
     r'fromStreet: "(?P<from>[^"]*)", toStreet: "(?P<to>[^"]*)", '
-    r'status: "(?P<status>[^"]*)", latitude: (?P<lat>-?[\d.]+), longitude: (?P<lon>-?[\d.]+)\)'
+    r'status: "(?P<status>[^"]*)", (?:speedLimit: (?P<limit>\w+), )?'
+    r'latitude: (?P<lat>-?[\d.]+), longitude: (?P<lon>-?[\d.]+)\)'
 )
 
 # Plain-English labels for LADOT's status values.

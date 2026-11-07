@@ -1,7 +1,11 @@
 :root {
     color-scheme: light dark;
-    --accent: #e3262f;
-    --accent-dark: #b81d25;
+    /* Apple's system orange, matching the app. Orange is too light for text on white,
+       so text uses the darker --accent-text. */
+    --accent: #ff9500;
+    --accent-dark: #e08300;
+    --accent-text: #b35900;
+    --on-accent: #fff;
     --text: #1c1c1e;
     --muted: #6c6c70;
     --bg: #ffffff;
@@ -16,6 +20,8 @@
         --bg: #0b0b0d;
         --card: #1c1c1e;
         --border: rgba(255, 255, 255, 0.1);
+        --accent: #ff9f0a;
+        --accent-text: #ff9f0a;
     }
 }
 
@@ -31,7 +37,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); }
+a { color: var(--accent-text); }
 .muted { color: var(--muted); }
 
 /* ---------- Simple pages (privacy, support) ---------- */
@@ -114,8 +120,8 @@ main footer a { color: var(--muted); margin-right: 16px; }
     margin: 0 0 16px;
     padding: 4px 12px;
     border-radius: 999px;
-    background: rgba(227, 38, 47, 0.12);
-    color: var(--accent);
+    background: rgba(255, 149, 0, 0.14);
+    color: var(--accent-text);
     font-size: 14px;
     font-weight: 600;
 }
@@ -180,7 +186,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
     border-radius: 38px;
     padding: 56px 14px 20px;
     background:
-        radial-gradient(circle at 30% 20%, rgba(227, 38, 47, 0.55), transparent 55%),
+        radial-gradient(circle at 30% 20%, rgba(255, 149, 0, 0.5), transparent 55%),
         radial-gradient(circle at 80% 90%, rgba(80, 80, 200, 0.45), transparent 50%),
         #101014;
     color: #fff;
@@ -274,7 +280,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
     text-align: center;
 }
 
-.stats strong { display: block; font-size: 36px; color: var(--accent); line-height: 1.2; }
+.stats strong { display: block; font-size: 36px; color: var(--accent-text); line-height: 1.2; }
 .stats span { color: var(--muted); font-size: 15px; }
 
 /* Sections */
@@ -315,7 +321,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
     margin-bottom: 16px;
     border-radius: 50%;
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     font-weight: 700;
 }
 
@@ -344,7 +350,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
 }
 
 .price-card li { padding: 8px 0 8px 30px; position: relative; border-top: 1px solid var(--border); }
-.price-card li::before { content: "✓"; position: absolute; left: 4px; color: var(--accent); font-weight: 700; }
+.price-card li::before { content: "✓"; position: absolute; left: 4px; color: var(--accent-text); font-weight: 700; }
 
 .price-compare { font-size: 15px; }
 
@@ -473,7 +479,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
     cursor: pointer;
 }
 
-.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 .camera-list { list-style: none; padding: 0; margin: 0 0 40px; }
 
@@ -509,7 +515,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
     padding: 12px 22px;
     border-radius: 12px;
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     font-weight: 600;
     text-decoration: none;
 }
