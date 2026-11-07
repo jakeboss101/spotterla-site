@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SpotterLA: Speed camera alerts for Los Angeles</title>
-    <meta name="description" content="A chime and the speed limit, spoken out loud, before every Los Angeles speed camera. Works in the background. No ads, no tracking. 7 days free, then $9.99/year.">
+    <meta name="description" content="See Los Angeles speed camera locations on a live map. SpotterLA gives you a chime and the speed limit before every LA speed camera.">
     <meta property="og:title" content="SpotterLA: Speed camera alerts for Los Angeles">
-    <meta property="og:description" content="Hear “Speed camera. Approaching. Limit 35.” before you pass one. Works in the background. No ads, no tracking.">
+    <meta property="og:description" content="See Los Angeles speed camera locations on a live map. Get a chime and the speed limit before every LA speed camera.">
     <meta property="og:image" content="https://spotterla.com/images/icon.png">
     <meta property="og:url" content="https://spotterla.com/">
+    <!-- <meta name="apple-itunes-app" content="app-id=APP_ID_HERE"> -->
     <meta name="theme-color" content="#0b0b0d">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -19,159 +20,315 @@
 <nav class="nav">
     <a class="brand" href="/"><img src="/images/icon.png" alt="" width="32" height="32">SpotterLA</a>
     <div class="nav-links">
-        <a href="/cameras">Camera map</a>
+        <a href="#camera-map">Camera map</a>
         <a href="#how">How it works</a>
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
     </div>
 </nav>
 
-<header class="hero">
-    <div class="hero-text">
+<header class="site-hero">
+    <div class="hero-copy">
         <p class="eyebrow">Be informed</p>
         <h1>Speed cameras are here.</h1>
         <p class="lead">Signs are easy to miss. SpotterLA gives you a chime and the speed limit before every LA speed camera, because every driver deserves to know the rules before they're enforced.</p>
+        <p class="camera-count" aria-live="polite">
+            <strong data-count="live"><!-- LIVE:START -->26<!-- LIVE:END --> cameras live now</strong>
+            <span>·</span>
+            <strong data-count="coming"><!-- COMING_SOON:START -->99<!-- COMING_SOON:END --> coming soon</strong>
+        </p>
         <div class="cta-row">
-            <span class="store-button" aria-disabled="true">
-                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-3-.79-1.54.02-2.96.9-3.75 2.27-1.6 2.78-.41 6.89 1.15 9.14.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.4-.92-2.42-3.66zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.02.61-2.67 1.37-.58.67-1.1 1.76-.96 2.8 1.02.08 2.05-.52 2.69-1.28z"/></svg>
+            <button class="store-button" type="button" disabled>
                 <span><small>Coming soon to the</small>App Store</span>
-            </span>
+            </button>
+            <button class="store-button play-store" type="button" disabled>
+                <span><small>Coming soon to</small>Google Play</span>
+            </button>
             <p class="cta-note">7 days free, then $9.99/year</p>
-        </div>
-        <p class="map-link"><a href="/cameras">See every LA speed camera on a free map →</a></p>
-    </div>
-
-    <div class="phone" aria-hidden="true">
-        <div class="phone-screen">
-            <p class="phone-time">8:41</p>
-            <p class="phone-date">Thursday, November 6</p>
-            <div class="notification">
-                <img src="/images/icon.png" alt="" width="36" height="36">
-                <div>
-                    <p class="notification-title">Speed camera ahead · Limit 35 mph <span>now</span></p>
-                    <p class="notification-body">Venice Blvd, Pisani Pl to Lincoln Blvd (Warning Live). Check your speed.</p>
-                </div>
-            </div>
-            <div class="voice-bubble">
-                <span class="wave"><i></i><i></i><i></i><i></i></span>
-                “Speed camera. Approaching. Limit 35.”
-            </div>
         </div>
     </div>
 </header>
 
-<section class="stats">
-    <div><strong>125</strong><span><a href="/cameras">camera locations</a> from LADOT</span></div>
-    <div><strong>Limit 35</strong><span>the speed limit, read out loud</span></div>
-    <div><strong>$50+</strong><span>for a single camera ticket</span></div>
-</section>
+<main>
+    <section id="camera-map" class="map-workspace" aria-label="Los Angeles speed camera map and list">
+        <div class="map-panel">
+            <div class="map-toolbar">
+                <p><span class="dot live"></span> Live <span class="dot coming-soon"></span> Coming soon</p>
+                <button id="near-me" class="near-me-button" type="button" aria-pressed="false">Near me</button>
+            </div>
+            <div id="map" class="camera-map" role="region" aria-label="Map of Los Angeles speed cameras">
+                <p id="map-message" class="map-message" role="status" aria-live="polite">Map unavailable until a MapKit token is configured. The camera list is ready to use.</p>
+            </div>
+        </div>
+        <aside class="camera-panel" aria-label="Camera locations">
+            <div class="list-heading">
+                <div>
+                    <h2>Camera locations</h2>
+                    <p id="result-summary" aria-live="polite">All Los Angeles locations</p>
+                </div>
+            </div>
+            <section id="new-locations" class="new-locations" aria-labelledby="new-locations-title" hidden>
+                <h3 id="new-locations-title">New locations</h3>
+                <ul id="new-location-list"></ul>
+            </section>
+            <div class="camera-controls">
+                <label class="visually-hidden" for="search">Search by street or cross street</label>
+                <input id="search" type="search" placeholder="Street or cross street">
+                <div class="chips" role="group" aria-label="Filter cameras">
+                    <button class="chip active" type="button" data-filter="all" aria-pressed="true">All</button>
+                    <button class="chip" type="button" data-filter="live" aria-pressed="false">Live</button>
+                    <button class="chip" type="button" data-filter="coming" aria-pressed="false">Coming soon</button>
+                </div>
+            </div>
+            <ul id="camera-list" class="camera-list" aria-label="Speed camera locations">
+                <!-- CAMERAS:START -->
+            <li class="camera-row" data-camera-id="10-9" data-status="construction" data-search="arlington ave w adams st w 18th st"><button class="camera-select" type="button" data-camera-id="10-9"><strong>Arlington Ave</strong><span>between W Adams St and W 18th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-9" aria-label="Share Arlington Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-8" data-status="construction" data-search="avalon blvd e 77th st e 74th st"><button class="camera-select" type="button" data-camera-id="9-8"><strong>Avalon Blvd</strong><span>between E 77th St and E 74th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-8" aria-label="Share Avalon Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-2" data-status="construction" data-search="balboa blvd orange line busway archwood st"><button class="camera-select" type="button" data-camera-id="6-2"><strong>Balboa Blvd</strong><span>between Orange Line Busway and Archwood St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-2" aria-label="Share Balboa Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-1" data-status="live" data-search="balboa blvd plummer st lassen st"><button class="camera-select" type="button" data-camera-id="12-1"><strong>Balboa Blvd</strong><span>between Plummer St and Lassen St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-1" aria-label="Share Balboa Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-2" data-status="construction" data-search="balboa blvd tulsa st 118 fwy"><button class="camera-select" type="button" data-camera-id="12-2"><strong>Balboa Blvd</strong><span>between Tulsa St and 118 Fwy</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-2" aria-label="Share Balboa Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-1" data-status="live" data-search="beverly blvd belmont ave witmer st"><button class="camera-select" type="button" data-camera-id="1-1"><strong>Beverly Blvd</strong><span>between Belmont Ave and Witmer St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-1" aria-label="Share Beverly Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-6" data-status="construction" data-search="burbank blvd kester ave sepulveda blvd"><button class="camera-select" type="button" data-camera-id="12-6"><strong>Burbank Blvd</strong><span>between Kester Ave and Sepulveda Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-6" aria-label="Share Burbank Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-1" data-status="live" data-search="coldwater canyon ave vanowen st bassett st"><button class="camera-select" type="button" data-camera-id="2-1"><strong>Coldwater Canyon Ave</strong><span>between Vanowen St and Bassett St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-1" aria-label="Share Coldwater Canyon Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-2" data-status="construction" data-search="cypress ave cazador st macon st (midblock)"><button class="camera-select" type="button" data-camera-id="1-2"><strong>Cypress Ave</strong><span>between Cazador St and Macon St (midblock)</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-2" aria-label="Share Cypress Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-4" data-status="construction" data-search="e 103rd st fifth blvd (midblock) grandee ave"><button class="camera-select" type="button" data-camera-id="15-4"><strong>E 103rd St</strong><span>between Fifth Blvd (midblock) and Grandee Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-4" aria-label="Share E 103rd St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-2" data-status="construction" data-search="e 4th st s mott ave s evergreen ave"><button class="camera-select" type="button" data-camera-id="14-2"><strong>E 4th St</strong><span>between S Mott Ave and S Evergreen Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="14-2" aria-label="Share E 4th St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-1" data-status="construction" data-search="e 4th st s pecan st s boyle ave"><button class="camera-select" type="button" data-camera-id="14-1"><strong>E 4th St</strong><span>between S Pecan St and S Boyle Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="14-1" aria-label="Share E 4th St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-7" data-status="construction" data-search="e imperial hwy avalon blvd stanford ave"><button class="camera-select" type="button" data-camera-id="15-7"><strong>E Imperial Hwy</strong><span>between Avalon Blvd and Stanford Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-7" aria-label="Share E Imperial Hwy camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-3" data-status="construction" data-search="e manchester ave wadsworth ave s central ave"><button class="camera-select" type="button" data-camera-id="9-3"><strong>E Manchester Ave</strong><span>between Wadsworth Ave and S Central Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-3" aria-label="Share E Manchester Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-6" data-status="construction" data-search="e vernon ave hooper ave (midblock) mckinley ave"><button class="camera-select" type="button" data-camera-id="9-6"><strong>E Vernon Ave</strong><span>between Hooper Ave (midblock) and McKinley Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-6" aria-label="Share E Vernon Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-3" data-status="live" data-search="foothill blvd newhome ave sherman grove ave"><button class="camera-select" type="button" data-camera-id="7-3"><strong>Foothill Blvd</strong><span>between Newhome Ave and Sherman Grove Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-3" aria-label="Share Foothill Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-8" data-status="construction" data-search="fountain ave n hoover st hyperion ave"><button class="camera-select" type="button" data-camera-id="4-8"><strong>Fountain Ave</strong><span>between N Hoover St and Hyperion Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="4-8" aria-label="Share Fountain Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-7" data-status="live" data-search="franklin ave cheremoya ave tamarind ave"><button class="camera-select" type="button" data-camera-id="4-7"><strong>Franklin Ave</strong><span>between Cheremoya Ave and Tamarind Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="4-7" aria-label="Share Franklin Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-3" data-status="construction" data-search="grandee ave e 108th st e century blvd"><button class="camera-select" type="button" data-camera-id="15-3"><strong>Grandee Ave</strong><span>between E 108th St and E Century Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="15-3" aria-label="Share Grandee Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-5" data-status="construction" data-search="hollywood blvd n vista st camino palmero st"><button class="camera-select" type="button" data-camera-id="4-5"><strong>Hollywood Blvd</strong><span>between N Vista St and Camino Palmero St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="4-5" aria-label="Share Hollywood Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-7" data-status="construction" data-search="huntington dr topaz st monterey rd"><button class="camera-select" type="button" data-camera-id="14-7"><strong>Huntington Dr</strong><span>between Topaz St and Monterey Rd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="14-7" aria-label="Share Huntington Dr camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-5" data-status="construction" data-search="la tijera blvd w manchester ave w 74th st"><button class="camera-select" type="button" data-camera-id="11-5"><strong>La Tijera Blvd</strong><span>between W Manchester Ave and W 74th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="11-5" aria-label="Share La Tijera Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-2" data-status="construction" data-search="laurel canyon blvd archwood st vanowen st"><button class="camera-select" type="button" data-camera-id="2-2"><strong>Laurel Canyon Blvd</strong><span>between Archwood St and Vanowen St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-2" aria-label="Share Laurel Canyon Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-4" data-status="construction" data-search="laurel canyon blvd pinney st hoyt st"><button class="camera-select" type="button" data-camera-id="7-4"><strong>Laurel Canyon Blvd</strong><span>between Pinney St and Hoyt St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-4" aria-label="Share Laurel Canyon Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-6" data-status="construction" data-search="laurel canyon blvd wolfskill st pacoima wash"><button class="camera-select" type="button" data-camera-id="7-6"><strong>Laurel Canyon Blvd</strong><span>between Wolfskill St and Pacoima Wash</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-6" aria-label="Share Laurel Canyon Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-3" data-status="construction" data-search="magnolia blvd tujunga ave klump ave"><button class="camera-select" type="button" data-camera-id="2-3"><strong>Magnolia Blvd</strong><span>between Tujunga Ave and Klump Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-3" aria-label="Share Magnolia Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-8" data-status="construction" data-search="marengo st n mission rd lord st"><button class="camera-select" type="button" data-camera-id="14-8"><strong>Marengo St</strong><span>between N Mission Rd and Lord St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="14-8" aria-label="Share Marengo St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-7" data-status="live" data-search="melrose ave n hayworth ave n orange grove ave"><button class="camera-select" type="button" data-camera-id="5-7"><strong>Melrose Ave</strong><span>between N Hayworth Ave and N Orange Grove Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-7" aria-label="Share Melrose Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-7" data-status="construction" data-search="mulholland dr corda dr calvena dr"><button class="camera-select" type="button" data-camera-id="11-7"><strong>Mulholland Dr</strong><span>between Corda Dr and Calvena Dr</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="11-7" aria-label="Share Mulholland Dr camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-1" data-status="construction" data-search="n avalon blvd w sandison st e n st"><button class="camera-select" type="button" data-camera-id="15-1"><strong>N Avalon Blvd</strong><span>between W Sandison St and E N St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-1" aria-label="Share N Avalon Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-5" data-status="live" data-search="n fairfax ave clinton st waring ave"><button class="camera-select" type="button" data-camera-id="5-5"><strong>N Fairfax Ave</strong><span>between Clinton St and Waring Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-5" aria-label="Share N Fairfax Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-3" data-status="construction" data-search="n figueroa st w avenue 45 s cessna ln"><button class="camera-select" type="button" data-camera-id="1-3"><strong>N Figueroa St</strong><span>between W Avenue 45 and S Cessna Ln</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-3" aria-label="Share N Figueroa St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-1" data-status="live" data-search="n highland ave franklin pl camrose dr"><button class="camera-select" type="button" data-camera-id="4-1"><strong>N Highland Ave</strong><span>between Franklin Pl and Camrose Dr</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="4-1" aria-label="Share N Highland Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-1" data-status="construction" data-search="n highland ave w sunset blvd hollywood blvd"><button class="camera-select" type="button" data-camera-id="13-1"><strong>N Highland Ave</strong><span>between W Sunset Blvd and Hollywood Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-1" aria-label="Share N Highland Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-3" data-status="live" data-search="n la brea ave w 1st st beverly blvd"><button class="camera-select" type="button" data-camera-id="5-3"><strong>N La Brea Ave</strong><span>between W 1st St and Beverly Blvd</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-3" aria-label="Share N La Brea Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-8" data-status="construction" data-search="n vermont ave melrose ave marathon st"><button class="camera-select" type="button" data-camera-id="13-8"><strong>N Vermont Ave</strong><span>between Melrose Ave and Marathon St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-8" aria-label="Share N Vermont Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-3" data-status="live" data-search="n western ave franklin ave los feliz blvd"><button class="camera-select" type="button" data-camera-id="4-3"><strong>N Western Ave</strong><span>between Franklin Ave and Los Feliz Blvd</span><span class="camera-row-meta"><span class="badge live">Live</span></span></button><button class="share-button" type="button" data-camera-id="4-3" aria-label="Share N Western Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-2" data-status="live" data-search="national blvd webster middle school (driveway) 405 fwy"><button class="camera-select" type="button" data-camera-id="11-2"><strong>National Blvd</strong><span>between Webster Middle School (driveway) and 405 Fwy</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="11-2" aria-label="Share National Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-4" data-status="construction" data-search="nordhoff st geyser ave yolanda ave"><button class="camera-select" type="button" data-camera-id="12-4"><strong>Nordhoff St</strong><span>between Geyser Ave and Yolanda Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-4" aria-label="Share Nordhoff St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-7" data-status="construction" data-search="nordhoff st noble ave pacoima wash"><button class="camera-select" type="button" data-camera-id="7-7"><strong>Nordhoff St</strong><span>between Noble Ave and Pacoima Wash</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-7" aria-label="Share Nordhoff St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-1" data-status="construction" data-search="nordhoff st pacoima wash cedros ave"><button class="camera-select" type="button" data-camera-id="6-1"><strong>Nordhoff St</strong><span>between Pacoima Wash and Cedros Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-1" aria-label="Share Nordhoff St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-3" data-status="live" data-search="nordhoff st petit ave gothic ave"><button class="camera-select" type="button" data-camera-id="12-3"><strong>Nordhoff St</strong><span>between Petit Ave and Gothic Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-3" aria-label="Share Nordhoff St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-4" data-status="live" data-search="oxnard st ethel ave coldwater canyon ave"><button class="camera-select" type="button" data-camera-id="2-4"><strong>Oxnard St</strong><span>between Ethel Ave and Coldwater Canyon Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-4" aria-label="Share Oxnard St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-5" data-status="construction" data-search="polk st glenoaks blvd fellows ave (midblock)"><button class="camera-select" type="button" data-camera-id="7-5"><strong>Polk St</strong><span>between Glenoaks Blvd and Fellows Ave (midblock)</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-5" aria-label="Share Polk St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-2" data-status="construction" data-search="reseda blvd erwin st victory blvd"><button class="camera-select" type="button" data-camera-id="3-2"><strong>Reseda Blvd</strong><span>between Erwin St and Victory Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-2" aria-label="Share Reseda Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-5" data-status="construction" data-search="reseda blvd kinzie st superior st"><button class="camera-select" type="button" data-camera-id="12-5"><strong>Reseda Blvd</strong><span>between Kinzie St and Superior St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-5" aria-label="Share Reseda Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-6" data-status="construction" data-search="reseda blvd wyandotte st valerio st"><button class="camera-select" type="button" data-camera-id="3-6"><strong>Reseda Blvd</strong><span>between Wyandotte St and Valerio St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-6" aria-label="Share Reseda Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-6" data-status="construction" data-search="riverside dr riverside ter allesandro st"><button class="camera-select" type="button" data-camera-id="13-6"><strong>Riverside Dr</strong><span>between Riverside Ter and Allesandro St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-6" aria-label="Share Riverside Dr camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-3" data-status="construction" data-search="s barrington ave ohio ave santa monica blvd"><button class="camera-select" type="button" data-camera-id="11-3"><strong>S Barrington Ave</strong><span>between Ohio Ave and Santa Monica Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="11-3" aria-label="Share S Barrington Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-2" data-status="construction" data-search="s central ave e 114th st e 109th st"><button class="camera-select" type="button" data-camera-id="15-2"><strong>S Central Ave</strong><span>between E 114th St and E 109th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-2" aria-label="Share S Central Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-9" data-status="construction" data-search="s central ave e 92nd ave e 90th st"><button class="camera-select" type="button" data-camera-id="9-9"><strong>S Central Ave</strong><span>between E 92nd Ave and E 90th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-9" aria-label="Share S Central Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-9" data-status="construction" data-search="s figueroa st w 68th st w gage ave"><button class="camera-select" type="button" data-camera-id="8-9"><strong>S Figueroa St</strong><span>between W 68th St and W Gage Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-9" aria-label="Share S Figueroa St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-4" data-status="construction" data-search="s figueroa st w adams blvd w 23rd st"><button class="camera-select" type="button" data-camera-id="1-4"><strong>S Figueroa St</strong><span>between W Adams Blvd and W 23rd St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-4" aria-label="Share S Figueroa St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-4" data-status="construction" data-search="s figueroa st w gage ave w 62nd st"><button class="camera-select" type="button" data-camera-id="9-4"><strong>S Figueroa St</strong><span>between W Gage Ave and W 62nd St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-4" aria-label="Share S Figueroa St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-3" data-status="construction" data-search="s figueroa st w manchester ave w 83rd st"><button class="camera-select" type="button" data-camera-id="8-3"><strong>S Figueroa St</strong><span>between W Manchester Ave and W 83rd St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-3" aria-label="Share S Figueroa St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-6" data-status="live" data-search="s gaffey st w 2nd st w 1st st"><button class="camera-select" type="button" data-camera-id="15-6"><strong>S Gaffey St</strong><span>between W 2nd St and W 1st St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-6" aria-label="Share S Gaffey St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-8" data-status="construction" data-search="s la brea ave veronica st coliseum st"><button class="camera-select" type="button" data-camera-id="10-8"><strong>S La Brea Ave</strong><span>between Veronica St and Coliseum St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-8" aria-label="Share S La Brea Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-1" data-status="live" data-search="s la cienega blvd coliseum st bowesfield st"><button class="camera-select" type="button" data-camera-id="10-1"><strong>S La Cienega Blvd</strong><span>between Coliseum St and Bowesfield St</span><span class="camera-row-meta"><span class="badge live">Live</span></span></button><button class="share-button" type="button" data-camera-id="10-1" aria-label="Share S La Cienega Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-3" data-status="construction" data-search="s la cienega blvd sawyer st w 18th st"><button class="camera-select" type="button" data-camera-id="10-3"><strong>S La Cienega Blvd</strong><span>between Sawyer St and W 18th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-3" aria-label="Share S La Cienega Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-1" data-status="construction" data-search="s la cienega blvd w 18th st horner st"><button class="camera-select" type="button" data-camera-id="5-1"><strong>S La Cienega Blvd</strong><span>between W 18th St and Horner St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-1" aria-label="Share S La Cienega Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-2" data-status="live" data-search="s la cienega blvd w pico blvd w olympic blvd"><button class="camera-select" type="button" data-camera-id="5-2"><strong>S La Cienega Blvd</strong><span>between W Pico Blvd and W Olympic Blvd</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-2" aria-label="Share S La Cienega Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-6" data-status="construction" data-search="s normandie ave w 62nd st w 64th st"><button class="camera-select" type="button" data-camera-id="8-6"><strong>S Normandie Ave</strong><span>between W 62nd St and W 64th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-6" aria-label="Share S Normandie Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-3" data-status="construction" data-search="s san pedro st e 17th st e 15th st"><button class="camera-select" type="button" data-camera-id="14-3"><strong>S San Pedro St</strong><span>between E 17th St and E 15th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="14-3" aria-label="Share S San Pedro St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-4" data-status="construction" data-search="s san pedro st e 6th st winston st"><button class="camera-select" type="button" data-camera-id="14-4"><strong>S San Pedro St</strong><span>between E 6th St and Winston St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="14-4" aria-label="Share S San Pedro St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-8" data-status="construction" data-search="s slauson ave culver blvd braddock dr"><button class="camera-select" type="button" data-camera-id="11-8"><strong>S Slauson Ave</strong><span>between Culver Blvd and Braddock Dr</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="11-8" aria-label="Share S Slauson Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-6" data-status="construction" data-search="s soto st e 6th st e 4th st"><button class="camera-select" type="button" data-camera-id="14-6"><strong>S Soto St</strong><span>between E 6th St and E 4th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="14-6" aria-label="Share S Soto St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-2" data-status="construction" data-search="s vermont ave w 58th pl w 57th st"><button class="camera-select" type="button" data-camera-id="9-2"><strong>S Vermont Ave</strong><span>between W 58th Pl and W 57th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-2" aria-label="Share S Vermont Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-2" data-status="live" data-search="s vermont ave w florence ave w 68th st"><button class="camera-select" type="button" data-camera-id="8-2"><strong>S Vermont Ave</strong><span>between W Florence Ave and W 68th St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-2" aria-label="Share S Vermont Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-7" data-status="construction" data-search="s western ave w 24th st w adams blvd"><button class="camera-select" type="button" data-camera-id="10-7"><strong>S Western Ave</strong><span>between W 24th St and W Adams Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-7" aria-label="Share S Western Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-8" data-status="construction" data-search="s western ave w 55th st w 53rd st"><button class="camera-select" type="button" data-camera-id="8-8"><strong>S Western Ave</strong><span>between W 55th St and W 53rd St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-8" aria-label="Share S Western Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-5" data-status="live" data-search="santa monica blvd n hobart blvd n normandie ave"><button class="camera-select" type="button" data-camera-id="13-5"><strong>Santa Monica Blvd</strong><span>between N Hobart Blvd and N Normandie Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-5" aria-label="Share Santa Monica Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-7" data-status="construction" data-search="sepulveda blvd stagg st saticoy st"><button class="camera-select" type="button" data-camera-id="6-7"><strong>Sepulveda Blvd</strong><span>between Stagg St and Saticoy St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-7" aria-label="Share Sepulveda Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-1" data-status="live" data-search="sepulveda blvd tupper st plummer st"><button class="camera-select" type="button" data-camera-id="7-1"><strong>Sepulveda Blvd</strong><span>between Tupper St and Plummer St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-1" aria-label="Share Sepulveda Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-7" data-status="construction" data-search="sesnon blvd reseda blvd high glen way"><button class="camera-select" type="button" data-camera-id="12-7"><strong>Sesnon Blvd</strong><span>between Reseda Blvd and High Glen Way</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 45 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-7" aria-label="Share Sesnon Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-7" data-status="construction" data-search="sherman way calvin ave vanalden ave"><button class="camera-select" type="button" data-camera-id="3-7"><strong>Sherman Way</strong><span>between Calvin Ave and Vanalden Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-7" aria-label="Share Sherman Way camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-6" data-status="construction" data-search="sherman way kester ave sherman cir (midblock)"><button class="camera-select" type="button" data-camera-id="6-6"><strong>Sherman Way</strong><span>between Kester Ave and Sherman Cir (midblock)</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-6" aria-label="Share Sherman Way camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-4" data-status="construction" data-search="sherman way lindley ave zelzah ave"><button class="camera-select" type="button" data-camera-id="4-4"><strong>Sherman Way</strong><span>between Lindley Ave and Zelzah Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="4-4" aria-label="Share Sherman Way camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-5" data-status="construction" data-search="sherman way n cedar rd costello ave"><button class="camera-select" type="button" data-camera-id="2-5"><strong>Sherman Way</strong><span>between N Cedar Rd and Costello Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-5" aria-label="Share Sherman Way camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-6-2" data-status="construction" data-search="tampa ave merridy st lassen st"><button class="camera-select" type="button" data-camera-id="12-6-2"><strong>Tampa Ave</strong><span>between Merridy St and Lassen St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="12-6-2" aria-label="Share Tampa Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="12-8" data-status="construction" data-search="valley circle blvd victory blvd highlander rd"><button class="camera-select" type="button" data-camera-id="12-8"><strong>Valley Circle Blvd</strong><span>between Victory Blvd and Highlander Rd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="12-8" aria-label="Share Valley Circle Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-2" data-status="construction" data-search="van nuys blvd 5 fwy laurel canyon blvd"><button class="camera-select" type="button" data-camera-id="7-2"><strong>Van Nuys Blvd</strong><span>between 5 Fwy and Laurel Canyon Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-2" aria-label="Share Van Nuys Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="7-8" data-status="construction" data-search="van nuys blvd herrick ave de garmo ave"><button class="camera-select" type="button" data-camera-id="7-8"><strong>Van Nuys Blvd</strong><span>between Herrick Ave and De Garmo Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="7-8" aria-label="Share Van Nuys Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-5" data-status="construction" data-search="vanowen st firmament ave columbus ave"><button class="camera-select" type="button" data-camera-id="6-5"><strong>Vanowen St</strong><span>between Firmament Ave and Columbus Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-5" aria-label="Share Vanowen St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-5" data-status="construction" data-search="vanowen st hatillo ave corbin ave"><button class="camera-select" type="button" data-camera-id="3-5"><strong>Vanowen St</strong><span>between Hatillo Ave and Corbin Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-5" aria-label="Share Vanowen St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-6" data-status="construction" data-search="vanowen st morse ave goodland ave"><button class="camera-select" type="button" data-camera-id="2-6"><strong>Vanowen St</strong><span>between Morse Ave and Goodland Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-6" aria-label="Share Vanowen St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-1" data-status="live" data-search="venice blvd pisani pl lincoln blvd"><button class="camera-select" type="button" data-camera-id="11-1"><strong>Venice Blvd</strong><span>between Pisani Pl and Lincoln Blvd</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="11-1" aria-label="Share Venice Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-4" data-status="construction" data-search="ventura blvd winnetka ave chalk hill"><button class="camera-select" type="button" data-camera-id="3-4"><strong>Ventura Blvd</strong><span>between Winnetka Ave and Chalk Hill</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-4" aria-label="Share Ventura Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-8" data-status="construction" data-search="vermont ave 255th st 253rd st"><button class="camera-select" type="button" data-camera-id="15-8"><strong>Vermont Ave</strong><span>between 255th St and 253rd St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-8" aria-label="Share Vermont Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-8" data-status="construction" data-search="victory blvd belmar ave tampa ave"><button class="camera-select" type="button" data-camera-id="3-8"><strong>Victory Blvd</strong><span>between Belmar Ave and Tampa Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 45 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-8" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-1" data-status="construction" data-search="victory blvd canby ave la river"><button class="camera-select" type="button" data-camera-id="3-1"><strong>Victory Blvd</strong><span>between Canby Ave and LA River</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 45 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-1" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-7" data-status="live" data-search="victory blvd ethel ave coldwater canyon ave"><button class="camera-select" type="button" data-camera-id="2-7"><strong>Victory Blvd</strong><span>between Ethel Ave and Coldwater Canyon Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-7" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-3" data-status="construction" data-search="victory blvd louise ave high tech los angeles east driveway"><button class="camera-select" type="button" data-camera-id="6-3"><strong>Victory Blvd</strong><span>between Louise Ave and High Tech Los Angeles East Driveway</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 45 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-3" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="2-8" data-status="construction" data-search="victory blvd mammoth ave ventura canyon ave"><button class="camera-select" type="button" data-camera-id="2-8"><strong>Victory Blvd</strong><span>between Mammoth Ave and Ventura Canyon Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="2-8" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-2" data-status="construction" data-search="victory blvd newcastle ave la river"><button class="camera-select" type="button" data-camera-id="4-2"><strong>Victory Blvd</strong><span>between Newcastle Ave and LA River</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 45 mph</span></span></button><button class="share-button" type="button" data-camera-id="4-2" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-4" data-status="live" data-search="victory blvd noble ave (midblock) cedros ave"><button class="camera-select" type="button" data-camera-id="6-4"><strong>Victory Blvd</strong><span>between Noble Ave (midblock) and Cedros Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-4" aria-label="Share Victory Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-6" data-status="construction" data-search="vista del mar culver blvd city limit"><button class="camera-select" type="button" data-camera-id="11-6"><strong>Vista Del Mar</strong><span>between Culver Blvd and City Limit</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="11-6" aria-label="Share Vista Del Mar camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-7" data-status="construction" data-search="w 3rd st s virgil ave s commonwealth ave"><button class="camera-select" type="button" data-camera-id="13-7"><strong>W 3rd St</strong><span>between S Virgil Ave and S Commonwealth Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-7" aria-label="Share W 3rd St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-4" data-status="construction" data-search="w 6th st s berendo st s vermont ave"><button class="camera-select" type="button" data-camera-id="10-4"><strong>W 6th St</strong><span>between S Berendo St and S Vermont Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-4" aria-label="Share W 6th St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="14-5" data-status="construction" data-search="w 7th st s flower st s grand ave"><button class="camera-select" type="button" data-camera-id="14-5"><strong>W 7th St</strong><span>between S Flower St and S Grand Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="14-5" aria-label="Share W 7th St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-5" data-status="live" data-search="w 8th st s westmoreland ave s hoover st"><button class="camera-select" type="button" data-camera-id="1-5"><strong>W 8th St</strong><span>between S Westmoreland Ave and S Hoover St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-5" aria-label="Share W 8th St camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-4" data-status="construction" data-search="w florence ave 2nd ave haas ave"><button class="camera-select" type="button" data-camera-id="8-4"><strong>W Florence Ave</strong><span>between 2nd Ave and Haas Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-4" aria-label="Share W Florence Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-1" data-status="live" data-search="w florence ave s vermont ave s hoover st"><button class="camera-select" type="button" data-camera-id="8-1"><strong>W Florence Ave</strong><span>between S Vermont Ave and S Hoover St</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-1" aria-label="Share W Florence Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-5" data-status="construction" data-search="w gage ave s halldale ave raymond ave"><button class="camera-select" type="button" data-camera-id="8-5"><strong>W Gage Ave</strong><span>between S Halldale Ave and Raymond Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="8-5" aria-label="Share W Gage Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-5" data-status="construction" data-search="w gage ave s hoover st s figueroa st"><button class="camera-select" type="button" data-camera-id="9-5"><strong>W Gage Ave</strong><span>between S Hoover St and S Figueroa St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-5" aria-label="Share W Gage Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-5" data-status="construction" data-search="w jefferson blvd crenshaw blvd s bronson ave"><button class="camera-select" type="button" data-camera-id="10-5"><strong>W Jefferson Blvd</strong><span>between Crenshaw Blvd and S Bronson Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-5" aria-label="Share W Jefferson Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="8-7" data-status="construction" data-search="w martin luther king jr. blvd s hobart blvd s saint andrew pl"><button class="camera-select" type="button" data-camera-id="8-7"><strong>W Martin Luther King Jr. Blvd</strong><span>between S Hobart Blvd and S Saint Andrew Pl</span><span class="camera-row-meta"><span class="badge construction">Under construction</span></span></button><button class="share-button" type="button" data-camera-id="8-7" aria-label="Share W Martin Luther King Jr. Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-6" data-status="live" data-search="w olympic blvd alvira st stearns dr"><button class="camera-select" type="button" data-camera-id="5-6"><strong>W Olympic Blvd</strong><span>between Alvira St and Stearns Dr</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-6" aria-label="Share W Olympic Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-6" data-status="construction" data-search="w olympic blvd elden ave s hoover st"><button class="camera-select" type="button" data-camera-id="1-6"><strong>W Olympic Blvd</strong><span>between Elden Ave and S Hoover St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-6" aria-label="Share W Olympic Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-8" data-status="construction" data-search="w olympic blvd greenfield ave 405 fwy"><button class="camera-select" type="button" data-camera-id="5-8"><strong>W Olympic Blvd</strong><span>between Greenfield Ave and 405 Fwy</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-8" aria-label="Share W Olympic Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-2" data-status="construction" data-search="w olympic blvd irolo st fedora st"><button class="camera-select" type="button" data-camera-id="10-2"><strong>W Olympic Blvd</strong><span>between Irolo St and Fedora St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-2" aria-label="Share W Olympic Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="5-4" data-status="live" data-search="w olympic blvd s la brea ave s sycamore ave"><button class="camera-select" type="button" data-camera-id="5-4"><strong>W Olympic Blvd</strong><span>between S La Brea Ave and S Sycamore Ave</span><span class="camera-row-meta"><span class="badge live">Live</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="5-4" aria-label="Share W Olympic Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-7" data-status="construction" data-search="w slauson ave brentwood st inskeep ave (midblock)"><button class="camera-select" type="button" data-camera-id="9-7"><strong>W Slauson Ave</strong><span>between Brentwood St and Inskeep Ave (midblock)</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-7" aria-label="Share W Slauson Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="9-1" data-status="construction" data-search="w slauson ave s budlong ave menlo ave"><button class="camera-select" type="button" data-camera-id="9-1"><strong>W Slauson Ave</strong><span>between S Budlong Ave and Menlo Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="9-1" aria-label="Share W Slauson Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-2" data-status="construction" data-search="w sunset blvd n bronson ave 101 fwy"><button class="camera-select" type="button" data-camera-id="13-2"><strong>W Sunset Blvd</strong><span>between N Bronson Ave and 101 Fwy</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-2" aria-label="Share W Sunset Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-4" data-status="construction" data-search="w sunset blvd n sycamore ave n mccadden pl"><button class="camera-select" type="button" data-camera-id="13-4"><strong>W Sunset Blvd</strong><span>between N Sycamore Ave and N McCadden Pl</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 30 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-4" aria-label="Share W Sunset Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="13-3" data-status="construction" data-search="w sunset blvd rosemont ave n alvarado st"><button class="camera-select" type="button" data-camera-id="13-3"><strong>W Sunset Blvd</strong><span>between Rosemont Ave and N Alvarado St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="13-3" aria-label="Share W Sunset Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="10-6" data-status="construction" data-search="w washington blvd 3rd ave s van ness ave"><button class="camera-select" type="button" data-camera-id="10-6"><strong>W Washington Blvd</strong><span>between 3rd Ave and S Van Ness Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="10-6" aria-label="Share W Washington Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-7" data-status="construction" data-search="w washington blvd s new hampshire ave s vermont ave"><button class="camera-select" type="button" data-camera-id="1-7"><strong>W Washington Blvd</strong><span>between S New Hampshire Ave and S Vermont Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-7" aria-label="Share W Washington Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="11-4" data-status="construction" data-search="washington blvd marr st thatcher ave"><button class="camera-select" type="button" data-camera-id="11-4"><strong>Washington Blvd</strong><span>between Marr St and Thatcher Ave</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="11-4" aria-label="Share Washington Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="4-9" data-status="construction" data-search="white oak ave margate st ventura blvd"><button class="camera-select" type="button" data-camera-id="4-9"><strong>White Oak Ave</strong><span>between Margate St and Ventura Blvd</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 40 mph</span></span></button><button class="share-button" type="button" data-camera-id="4-9" aria-label="Share White Oak Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="15-5" data-status="construction" data-search="wilmington ave e 113th st e 110th st"><button class="camera-select" type="button" data-camera-id="15-5"><strong>Wilmington Ave</strong><span>between E 113th St and E 110th St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="15-5" aria-label="Share Wilmington Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="1-8" data-status="construction" data-search="wilshire blvd s la fayette park pl s park view st"><button class="camera-select" type="button" data-camera-id="1-8"><strong>Wilshire Blvd</strong><span>between S La Fayette Park Pl and S Park View St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="1-8" aria-label="Share Wilshire Blvd camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="3-3" data-status="construction" data-search="winnetka ave arminta st strathern st"><button class="camera-select" type="button" data-camera-id="3-3"><strong>Winnetka Ave</strong><span>between Arminta St and Strathern St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="3-3" aria-label="Share Winnetka Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-8" data-status="construction" data-search="woodman ave roscoe blvd strathern st"><button class="camera-select" type="button" data-camera-id="6-8"><strong>Woodman Ave</strong><span>between Roscoe Blvd and Strathern St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-8" aria-label="Share Woodman Ave camera location">Share</button></li>
+            <li class="camera-row" data-camera-id="6-9" data-status="construction" data-search="woodman ave terra bella st nordhoff st"><button class="camera-select" type="button" data-camera-id="6-9"><strong>Woodman Ave</strong><span>between Terra Bella St and Nordhoff St</span><span class="camera-row-meta"><span class="badge construction">Under construction</span><span class="camera-limit">Limit 35 mph</span></span></button><button class="share-button" type="button" data-camera-id="6-9" aria-label="Share Woodman Ave camera location">Share</button></li>
+            <!-- CAMERAS:END -->
+            </ul>
+            <p id="copy-status" class="visually-hidden" aria-live="polite"></p>
+        </aside>
+    </section>
 
-<section id="how" class="section">
-    <h2>How it works</h2>
-    <div class="steps">
-        <div class="step">
-            <span class="step-number">1</span>
-            <h3>Turn it on</h3>
-            <p>Switch on Active Protection and allow location “Always” and notifications. That's it.</p>
-        </div>
-        <div class="step">
-            <span class="step-number">2</span>
-            <h3>Drive like normal</h3>
-            <p>Use Maps, play music, leave your phone in the mount. SpotterLA runs in the background.</p>
-        </div>
-        <div class="step">
-            <span class="step-number">3</span>
-            <h3>Hear the heads-up</h3>
-            <p>A chime, then “Speed camera. Approaching. Limit 35.” Short enough to take in without looking down.</p>
-        </div>
+    <div class="content-sections">
+        <section class="info-card notice-card">
+            <h2>Got a warning notice in the mail?</h2>
+            <p>Every LA speed camera starts with a <strong>60-day warning period</strong>. During it, drivers going 11 mph or more over the limit get a <strong>$0 warning notice</strong> instead of a ticket.</p>
+            <p>After that, notices become fines: <strong>$50</strong> for 11–15 mph over, rising to as much as <strong>$500</strong> for extreme speeding. Fines are civil penalties mailed to the vehicle's registered owner, and the city offers reduced payment options for low-income drivers.</p>
+            <p class="source">Source and official details: <a href="https://ladot.lacity.gov/speed-safety-system">LADOT Speed Safety System</a>.</p>
+        </section>
+
+        <section id="how" class="section">
+            <h2>How it works</h2>
+            <div class="steps">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <h3>Turn it on</h3>
+                    <p>Switch on Active Protection and allow location “Always” and notifications. That's it.</p>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <h3>Drive like normal</h3>
+                    <p>Use Maps, play music, leave your phone in the mount. SpotterLA runs in the background.</p>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <h3>Hear the heads-up</h3>
+                    <p>A chime, then “Speed camera. Approaching. Limit 35.” Short enough to take in without looking down.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>What you get</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>Voice alerts</h3>
+                    <p>Short and to the point. You hear the speed limit, so your eyes stay on the road.</p>
+                </div>
+                <div class="feature">
+                    <h3>Runs in the background</h3>
+                    <p>It uses Apple's geofencing, the same thing behind location-based reminders, so alerts come in while you drive.</p>
+                </div>
+                <div class="feature">
+                    <h3>Camera map</h3>
+                    <p>The map follows you as you drive, with each camera's speed limit right on its pin.</p>
+                </div>
+                <div class="feature">
+                    <h3>Your location stays on your phone</h3>
+                    <p>No account, no ads, no tracking. Your location is never sent to us or anyone else.</p>
+                </div>
+                <div class="feature">
+                    <h3>Easy on your battery</h3>
+                    <p>GPS doesn't stay on. Your iPhone wakes SpotterLA only when you're near a camera.</p>
+                </div>
+                <div class="feature">
+                    <h3>Updated as the city adds cameras</h3>
+                    <p>Camera locations come from LADOT's Speed Safety program. We add new ones as they go up.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="info-card goal-card">
+                <h2>Our goal</h2>
+                <p>Help you build the habit of driving the limit. If one day you don't need SpotterLA anymore, we've done our job.</p>
+            </div>
+        </section>
+
+        <section id="pricing" class="section pricing">
+            <h2>Pricing</h2>
+            <div class="price-card">
+                <p class="price-label">SpotterLA Pro</p>
+                <p class="price"><strong>$9.99</strong>/year</p>
+                <p class="price-sub">Under $1 a month. Try it free for 7 days.</p>
+                <ul>
+                    <li>Chime and voice alerts for every camera</li>
+                    <li>Works in the background</li>
+                    <li>Camera map and list</li>
+                    <li>No ads, ever</li>
+                </ul>
+                <p class="price-compare">A single camera ticket is $50 or more.</p>
+            </div>
+            <p class="fine-print">Payment is charged to your Apple Account when the trial ends unless you cancel at least 24 hours before. The subscription renews yearly until canceled in your App Store settings.</p>
+        </section>
+
+        <section id="faq" class="section faq">
+            <h2>Questions</h2>
+            <details>
+                <summary>Does SpotterLA work outside Los Angeles?</summary>
+                <p>Not yet. It covers the City of Los Angeles speed camera program run by LADOT.</p>
+            </details>
+            <details>
+                <summary>Do I need to keep the app open?</summary>
+                <p>No. Turn on protection, set location to “Always,” and SpotterLA works in the background.</p>
+            </details>
+            <details>
+                <summary>Will it drain my battery?</summary>
+                <p>Not that you'd notice. Apple's geofencing wakes the app only near cameras, and GPS never stays on.</p>
+            </details>
+            <details>
+                <summary>Is my location shared with anyone?</summary>
+                <p>No. Your location never leaves your iPhone. See the <a href="/privacy">privacy policy</a>.</p>
+            </details>
+            <details>
+                <summary>What happens when my free trial ends?</summary>
+                <p>If you keep auto-renew on, your $9.99 yearly plan starts and alerts keep working. If you turn it off, we'll remind you the day before the trial ends, and alerts pause after it does.</p>
+            </details>
+            <details>
+                <summary>Is this about dodging tickets?</summary>
+                <p>No. A lot of these cameras are near schools, and we built SpotterLA because a quick heads-up gets people to slow down right where it matters. The locations are public, published by the City of LA. Please drive the speed limit.</p>
+            </details>
+            <details>
+                <summary>Where do the speed limits come from?</summary>
+                <p>From OpenStreetMap. If a camera's limit isn't clear, SpotterLA just says “Speed camera. Approaching.” Always go by the posted sign.</p>
+            </details>
+        </section>
     </div>
-</section>
-
-<section class="section">
-    <h2>What you get</h2>
-    <div class="features">
-        <div class="feature">
-            <h3>Voice alerts</h3>
-            <p>Short and to the point. You hear the speed limit, so your eyes stay on the road.</p>
-        </div>
-        <div class="feature">
-            <h3>Runs in the background</h3>
-            <p>It uses Apple's geofencing, the same thing behind location-based reminders, so alerts come in while you drive.</p>
-        </div>
-        <div class="feature">
-            <h3>Camera map</h3>
-            <p>The map follows you as you drive, with each camera's speed limit right on its pin.</p>
-        </div>
-        <div class="feature">
-            <h3>Your location stays on your phone</h3>
-            <p>No account, no ads, no tracking. Your location is never sent to us or anyone else.</p>
-        </div>
-        <div class="feature">
-            <h3>Easy on your battery</h3>
-            <p>GPS doesn't stay on. Your iPhone wakes SpotterLA only when you're near a camera.</p>
-        </div>
-        <div class="feature">
-            <h3>Updated as the city adds cameras</h3>
-            <p>Camera locations come from LADOT's Speed Safety program. We add new ones as they go up.</p>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="info-card">
-        <h2>Our goal</h2>
-        <p>Help you build the habit of driving the limit. If one day you don't need SpotterLA anymore, we've done our job.</p>
-    </div>
-</section>
-
-<section id="pricing" class="section pricing">
-    <h2>Pricing</h2>
-    <div class="price-card">
-        <p class="price-label">SpotterLA Pro</p>
-        <p class="price"><strong>$9.99</strong>/year</p>
-        <p class="price-sub">Under $1 a month. Try it free for 7 days.</p>
-        <ul>
-            <li>Chime and voice alerts for every camera</li>
-            <li>Works in the background</li>
-            <li>Camera map and list</li>
-            <li>No ads, ever</li>
-        </ul>
-        <p class="price-compare">A single camera ticket is $50 or more.</p>
-    </div>
-    <p class="fine-print">Payment is charged to your Apple Account when the trial ends unless you cancel at least 24 hours before. The subscription renews yearly until canceled in your App Store settings.</p>
-</section>
-
-<section id="faq" class="section faq">
-    <h2>Questions</h2>
-    <details>
-        <summary>Does SpotterLA work outside Los Angeles?</summary>
-        <p>Not yet. It covers the City of Los Angeles speed camera program run by LADOT.</p>
-    </details>
-    <details>
-        <summary>Do I need to keep the app open?</summary>
-        <p>No. Turn on protection, set location to “Always,” and SpotterLA works in the background.</p>
-    </details>
-    <details>
-        <summary>Will it drain my battery?</summary>
-        <p>Not that you'd notice. Apple's geofencing wakes the app only near cameras, and GPS never stays on.</p>
-    </details>
-    <details>
-        <summary>Is my location shared with anyone?</summary>
-        <p>No. Your location never leaves your iPhone. See the <a href="/privacy">privacy policy</a>.</p>
-    </details>
-    <details>
-        <summary>What happens when my free trial ends?</summary>
-        <p>If you keep auto-renew on, your $9.99 yearly plan starts and alerts keep working. If you turn it off, we'll remind you the day before the trial ends, and alerts pause after it does.</p>
-    </details>
-    <details>
-        <summary>Is this about dodging tickets?</summary>
-        <p>No. A lot of these cameras are near schools, and we built SpotterLA because a quick heads-up gets people to slow down right where it matters. The locations are public, published by the City of LA. Please drive the speed limit.</p>
-    </details>
-    <details>
-        <summary>Where do the speed limits come from?</summary>
-        <p>From OpenStreetMap. If a camera's limit isn't clear, SpotterLA just says “Speed camera. Approaching.” Always go by the posted sign.</p>
-    </details>
-</section>
+</main>
 
 <footer class="site-footer">
     <p>Always obey posted speed limits and don't handle your phone while driving. Camera locations come from LADOT and may be incomplete or out of date. Speed limits come from OpenStreetMap and may be missing or wrong, so always follow posted signs. SpotterLA is not affiliated with the City of Los Angeles.</p>
@@ -182,6 +339,6 @@
         <span>© 2026 Joseph Khan</span>
     </p>
 </footer>
-
+<script src="/scripts/map.js" defer></script>
 </body>
 </html>
