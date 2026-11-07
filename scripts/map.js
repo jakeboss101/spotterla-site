@@ -260,15 +260,26 @@ const MAPKIT_TOKEN = "eyJraWQiOiI0WkJTTjRWSEZLIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNT
                 pointOfInterestFilter: mapkit.PointOfInterestFilter.excludingAllCategories
             });
             map.showsTraffic = false;
+            // The app's soft, muted colors, so the camera pins stand out.
+            map.mapType = mapkit.Map.MapTypes.MutedStandard;
 
+            // Same pins as the iPhone app: a white camera in a red (live) or gray marker,
+            // with just the speed limit underneath.
+            const cameraGlyph = {
+                1: "/images/camera-glyph.png",
+                2: "/images/camera-glyph@2x.png",
+                3: "/images/camera-glyph@3x.png"
+            };
             const annotations = cameras.map((camera) => {
+                const hasLimit = camera.speedLimit !== null && camera.speedLimit !== undefined;
                 const options = {
                     color: camera.status === "live" ? "#e3262f" : "#8e8e93",
+                    glyphImage: cameraGlyph,
+                    title: hasLimit ? `${camera.speedLimit} mph` : "",
+                    titleVisibility: mapkit.FeatureVisibility.Visible,
+                    subtitleVisibility: mapkit.FeatureVisibility.Hidden,
                     enabled: true
                 };
-                if (camera.speedLimit !== null && camera.speedLimit !== undefined) {
-                    options.glyphText = `${camera.speedLimit} mph`;
-                }
                 const annotation = new mapkit.MarkerAnnotation(
                     new mapkit.Coordinate(camera.lat, camera.lon),
                     options
