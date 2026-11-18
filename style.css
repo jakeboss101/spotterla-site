@@ -585,6 +585,7 @@ main footer a { color: var(--muted); margin-right: 16px; }
 }
 .store-button small { font-size: 11px; }
 .store-button.play-store { background: #343437; }
+a.store-button { opacity: 1; cursor: pointer; text-decoration: none; }
 .cta-note { font-size: 14px; }
 
 .map-workspace {
