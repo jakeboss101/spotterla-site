@@ -90,9 +90,13 @@ main footer a { color: var(--muted); margin-right: 16px; }
     gap: 10px;
     color: var(--text);
     font-weight: 700;
-    font-size: 20px;
+    font-size: 24px;
+    font-style: italic;
     text-decoration: none;
 }
+
+/* "LA" in the app's orange, like the app's own title. */
+.brand-la { color: var(--accent-text); }
 
 .brand img { border-radius: 11px; }
 
@@ -537,9 +541,10 @@ main footer a { color: var(--muted); margin-right: 16px; }
     padding: 0;
 }
 
-.landing .nav { padding-top: 12px; padding-bottom: 12px; }
+/* Logo, heading and map share one width, so their left edges line up on wide screens. */
+.landing .nav { max-width: 1440px; padding-top: 12px; padding-bottom: 12px; }
 .site-hero {
-    max-width: 1240px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 2px 24px 18px;
 }
