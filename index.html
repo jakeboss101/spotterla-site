@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#0b0b0d">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="stylesheet" href="/style.css?v=2">
+    <link rel="stylesheet" href="/style.css?v=3">
 </head>
 <body class="landing">
 
@@ -38,12 +38,13 @@
             <strong data-count="coming"><!-- COMING_SOON:START -->99<!-- COMING_SOON:END --> coming soon</strong>
         </p>
         <div class="cta-row">
-            <a class="store-button" href="https://apps.apple.com/us/app/spotterla/id6831798615">
-                <span><small>Download on the</small>App Store</span>
+            <a class="store-badge" href="https://apps.apple.com/us/app/spotterla/id6831798615">
+                <img src="/images/app-store-badge.svg" alt="Download on the App Store" width="144" height="48">
             </a>
-            <button class="store-button play-store" type="button" disabled>
-                <span><small>Coming soon to</small>Google Play</span>
-            </button>
+            <a class="store-button play-store" id="android-test-button" href="mailto:support@spotterla.com?subject=SpotterLA%20Android%20test&amp;body=Please%20add%20me%20to%20the%20free%20SpotterLA%20Android%20test.%0A%0AMy%20Google%20account%20(Gmail)%3A%20">
+                <img class="android-head" src="/images/android-head.svg" alt="" width="34" height="20">
+                <span><small>Download Test Version</small>Android</span>
+            </a>
             <p class="cta-note">7 days free, then $9.99/year</p>
         </div>
     </div>
@@ -332,6 +333,7 @@
 
 <footer class="site-footer">
     <p>Always obey posted speed limits. Camera data may be out of date. Not affiliated with any government agency.</p>
+    <p class="credit">The Android robot is reproduced or modified from work created and shared by Google and used according to terms described in the Creative Commons 3.0 Attribution License.</p>
     <p>
         <a href="/cameras">Camera Map</a>
         <a href="/privacy">Privacy Policy</a>
@@ -339,6 +341,19 @@
         <span>© 2026 Joseph Khan</span>
     </p>
 </footer>
+<dialog id="android-test" class="test-dialog" aria-labelledby="android-test-title">
+    <form id="android-test-form" method="dialog">
+        <button class="test-dialog-close" type="button" value="cancel" aria-label="Close">✕</button>
+        <h2 id="android-test-title">Get the Android test version</h2>
+        <label id="android-test-label" for="android-test-email">Enter the email of the Google account on your phone:</label>
+        <input id="android-test-email" type="email" required placeholder="you@example.com" autocomplete="email">
+        <button class="test-dialog-send" type="submit">Send</button>
+        <p id="android-test-thanks" class="test-dialog-thanks" role="status" hidden>✓ Thanks! You'll receive a link to download the app within 8 hours.</p>
+        <p id="android-test-error" class="test-dialog-error" role="alert" hidden>That didn't go through. Please email support@spotterla.com.</p>
+    </form>
+</dialog>
+
 <script src="/scripts/map.js?v=2" defer></script>
+<script src="/scripts/android-test.js" defer></script>
 </body>
 </html>
